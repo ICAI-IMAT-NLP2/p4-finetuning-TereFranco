@@ -54,21 +54,21 @@ def inject_lora_into_model(model, r=4, alpha=32, device='cpu'):
     Returns:
         model (PreTrainedModel): The model with LoRA injected into attention layers.
     """
-    def _recursive_inject_lora_into_model(current_module, r=4, alpha=32, device='cpu'):
-        # TODO: Iterate through all child modules of the model
-        """for name, layer in model.named_modules():
-            print(name, layer)"""
-            
-        for child_name, child_module in list(current_module.named_children()):
-            # TODO: Check if the child module is a linear layer of the attention module
-            if child_name.lower() in ["q", "k", "v","o"]:
-                # TODO: Create LoRA layer for linear module
-                lora_layer = LoRA(child_module,r,alpha)
-                setattr(current_module, child_name, lora_layer)
-            else:
-                # TODO: Recursively inject LoRA into child module
-                _recursive_inject_lora_into_model(child_module,r,alpha,device)
-    _recursive_inject_lora_into_model(model, r, alpha, device)
+
+    # TODO: Iterate through all child modules of the model
+    """for name, layer in model.named_modules():
+        print(name, layer)"""
+        
+    for child_name, child_module in list(model.named_children()):
+        # TODO: Check if the child module is a linear layer of the attention module
+        if child_name.lower() in ["q", "k", "v","o"]:
+            # TODO: Create LoRA layer for linear module
+            lora_layer = LoRA(child_module,r,alpha)
+            setattr(model, child_name, lora_layer)
+        else:
+            # TODO: Recursively inject LoRA into child module
+            inject_lora_into_model(child_module,r,alpha,device)
+
     return model.to(device)
 
 
